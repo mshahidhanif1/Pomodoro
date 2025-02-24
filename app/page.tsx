@@ -1,11 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Player } from "@lottiefiles/react-lottie-player";
+import dynamic from "next/dynamic";
 import { LuTimerReset } from "react-icons/lu";
 import { VscDebugStart } from "react-icons/vsc";
 import { CiPause1 } from "react-icons/ci";
 
-// Import animation only on the client side
+// Dynamically import Lottie Player to prevent hydration issues
+const Player = dynamic(() => import("@lottiefiles/react-lottie-player").then((mod) => mod.Player), { ssr: false });
 import verifyAnimation from "../public/Animation - 1740303202047.json";
 
 export default function Home() {
@@ -13,6 +14,8 @@ export default function Home() {
   const [isBreak, setIsBreak] = useState(false);
   const [totalSeconds, setTotalSeconds] = useState(25 * 60);
   const [sessionCount, setSessionCount] = useState(0);
+  const [isClient, setIsClient] = useState(false); // Check if component is mounted
+
 
   useEffect(() => {
     if (!isRunning) return;
@@ -81,8 +84,10 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
       <div className="flex items-center justify-center space-x-6 p-4 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl shadow-lg -mt-10">
-        {/* Only render Player if verify is defined */}
-        <Player autoplay loop src={verifyAnimation} className="w-[120px] h-[120px]" />
+        {/* Render Player only if animation is loaded */}
+        {isClient && (
+          <Player autoplay loop src={verifyAnimation} className="w-[120px] h-[120px]" />
+        )}
         <h1 className="text-5xl font-extrabold text-white drop-shadow-lg transition-transform transform hover:scale-105">
           Pomodoro Timer
         </h1>
