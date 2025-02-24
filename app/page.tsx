@@ -18,6 +18,7 @@ export default function Home() {
 
 
   useEffect(() => {
+    setIsClient(true);
     if (!isRunning) return;
 
     const interval = setInterval(() => {
