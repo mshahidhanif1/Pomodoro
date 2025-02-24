@@ -13,11 +13,12 @@ export default function Home() {
   const [workSec, setWorkSec] = useState(0);
   const [breakMin, setBreakMin] = useState(5);
   const [breakSec, setBreakSec] = useState(0);
-  const [sessionCount, setSessionCount] = useState(0); 
+  const [sessionCount, setSessionCount] = useState(0);
 
   useEffect(() => {
     if (!isRunning || isBreak) return;
-    const intervalPom = setInterval(() => {
+
+    let intervalPom: NodeJS.Timeout = setInterval(() => {
       setWorkSec((prevSec) => {
         if (prevSec === 0) {
           if (workMin === 0) {
@@ -38,7 +39,8 @@ export default function Home() {
 
   useEffect(() => {
     if (!isRunning || !isBreak) return;
-    const breakInterval = setInterval(() => {
+
+    let breakInterval: NodeJS.Timeout = setInterval(() => {
       setBreakSec((prevSec) => {
         if (prevSec === 0) {
           if (breakMin === 0) {
@@ -119,16 +121,25 @@ export default function Home() {
 
       <div className="flex space-x-6 mt-10">
         {!isRunning && sessionCount < 4 && (
-          <button onClick={startTimer} className="flex items-center px-6 py-3 text-lg font-medium bg-green-500 hover:bg-green-600 rounded-full shadow-md hover:scale-110 transition-transform">
+          <button
+            onClick={startTimer}
+            className="flex items-center px-6 py-3 text-lg font-medium bg-green-500 hover:bg-green-600 rounded-full shadow-md hover:scale-110 transition-transform"
+          >
             <VscDebugStart className="mr-2 text-xl" /> Start
           </button>
         )}
         {isRunning && (
-          <button onClick={stopTimer} className="flex items-center px-6 py-3 text-lg font-medium bg-yellow-500 hover:bg-yellow-600 rounded-full shadow-md hover:scale-110 transition-transform">
+          <button
+            onClick={stopTimer}
+            className="flex items-center px-6 py-3 text-lg font-medium bg-yellow-500 hover:bg-yellow-600 rounded-full shadow-md hover:scale-110 transition-transform"
+          >
             <CiPause1 className="mr-2 text-xl" /> Pause
           </button>
         )}
-        <button onClick={resetTimer} className="flex items-center px-6 py-3 text-lg font-medium bg-red-500 hover:bg-red-600 rounded-full shadow-md hover:scale-110 transition-transform">
+        <button
+          onClick={resetTimer}
+          className="flex items-center px-6 py-3 text-lg font-medium bg-red-500 hover:bg-red-600 rounded-full shadow-md hover:scale-110 transition-transform"
+        >
           <LuTimerReset className="mr-2 text-xl" /> Reset
         </button>
       </div>
