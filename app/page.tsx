@@ -17,11 +17,11 @@ export default function Home() {
 
   useEffect(() => {
     if (!isRunning || isBreak) return;
-    let interval = setInterval(() => {
+    const intervalPom = setInterval(() => {
       setWorkSec((prevSec) => {
         if (prevSec === 0) {
           if (workMin === 0) {
-            clearInterval(interval);
+            clearInterval(intervalPom);
             startBreak();
             return 0;
           } else {
@@ -33,7 +33,7 @@ export default function Home() {
       });
     }, 1000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(intervalPom);
   }, [isRunning, isBreak, workMin]);
 
   useEffect(() => {
