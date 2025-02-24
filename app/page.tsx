@@ -13,65 +13,55 @@ export default function Home() {
   const [workSec, setWorkSec] = useState(0);
   const [breakMin, setBreakMin] = useState(5);
   const [breakSec, setBreakSec] = useState(0);
-  const [sessionCount, setSessionCount] = useState(0); // Track completed sessions
+  const [sessionCount, setSessionCount] = useState(0); 
 
   useEffect(() => {
-    let interval;
-    if (isRunning) {
-      interval = setInterval(() => {
-        if (!isBreak) {
-          if (workMin === 0 && workSec === 0) {
+    if (!isRunning || isBreak) return;
+    let interval = setInterval(() => {
+      setWorkSec((prevSec) => {
+        if (prevSec === 0) {
+          if (workMin === 0) {
             clearInterval(interval);
-            setIsRunning(false);
             startBreak();
+            return 0;
           } else {
-            if (workSec === 0) {
-              setWorkMin((prevMin) => prevMin - 1);
-              setWorkSec(59);
-            } else {
-              setWorkSec((prevSec) => prevSec - 1);
-            }
+            setWorkMin((prevMin) => prevMin - 1);
+            return 59;
           }
         }
-      }, 1000);
-    }
+        return prevSec - 1;
+      });
+    }, 1000);
+
     return () => clearInterval(interval);
-  }, [isRunning, isBreak, workMin, workSec]);
+  }, [isRunning, isBreak, workMin]);
 
   useEffect(() => {
-    let breakInterval;
-    if (isBreak) {
-      breakInterval = setInterval(() => {
-        if (breakMin === 0 && breakSec === 0) {
-          clearInterval(breakInterval);
-          setIsBreak(false);
-          setSessionCount((prevCount) => prevCount + 1);
-
-          if (sessionCount + 1 < 4) {
-            resetWorkSession();
-          }
-        } else {
-          if (breakSec === 0) {
-            setBreakMin((prevMin) => prevMin - 1);
-            setBreakSec(59);
+    if (!isRunning || !isBreak) return;
+    let breakInterval = setInterval(() => {
+      setBreakSec((prevSec) => {
+        if (prevSec === 0) {
+          if (breakMin === 0) {
+            clearInterval(breakInterval);
+            endBreak();
+            return 0;
           } else {
-            setBreakSec((prevSec) => prevSec - 1);
+            setBreakMin((prevMin) => prevMin - 1);
+            return 59;
           }
         }
-      }, 1000);
-    }
+        return prevSec - 1;
+      });
+    }, 1000);
+
     return () => clearInterval(breakInterval);
-  }, [isBreak, breakMin, breakSec, sessionCount]);
+  }, [isRunning, isBreak, breakMin]);
 
   const startTimer = () => {
-    if (sessionCount < 4) {
-      setIsRunning(true);
-    }
+    if (sessionCount < 4) setIsRunning(true);
   };
 
-  const stopTimer = () => {
-    setIsRunning(false);
-  };
+  const stopTimer = () => setIsRunning(false);
 
   const resetTimer = () => {
     setIsRunning(false);
@@ -89,17 +79,24 @@ export default function Home() {
     setBreakSec(0);
   };
 
-  const resetWorkSession = () => {
-    setIsRunning(true);
-    setWorkMin(25);
-    setWorkSec(0);
+  const endBreak = () => {
+    setIsBreak(false);
+    setSessionCount((prevCount) => prevCount + 1);
+
+    if (sessionCount + 1 < 4) {
+      setWorkMin(25);
+      setWorkSec(0);
+      setIsRunning(true);
+    } else {
+      setIsRunning(false);
+    }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
       <div className="flex items-center justify-center space-x-6 p-4 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl shadow-lg -mt-10">
-        <Player autoplay loop src={verify} className="w-[120px] h-[120px]" style={{ background: "none" }} />
-        <h1 className="text-5xl font-extrabold text-white drop-shadow-lg transition-transform transform hover:scale-105">
+        <Player autoplay loop src={verify} className="w-[120px] h-[120px]" />
+        <h1 className="text-5xl font-extrabold text-white drop-shadow-lg hover:scale-105 transition-transform">
           Pomodoro Timer
         </h1>
       </div>
