@@ -16,47 +16,55 @@ export default function Home() {
   const [sessionCount, setSessionCount] = useState(0);
 
   useEffect(() => {
-    if (!isRunning || isBreak) return;
+    let interval: NodeJS.Timeout | null = null;
 
-    let intervalPom: NodeJS.Timeout = setInterval(() => {
-      setWorkSec((prevSec) => {
-        if (prevSec === 0) {
-          if (workMin === 0) {
-            clearInterval(intervalPom);
-            startBreak();
-            return 0;
-          } else {
-            setWorkMin((prevMin) => prevMin - 1);
-            return 59;
+    if (isRunning && !isBreak) {
+      interval = setInterval(() => {
+        setWorkSec((prevSec) => {
+          if (prevSec === 0) {
+            if (workMin === 0) {
+              clearInterval(interval!);
+              startBreak();
+              return 0;
+            } else {
+              setWorkMin((prevMin) => prevMin - 1);
+              return 59;
+            }
           }
-        }
-        return prevSec - 1;
-      });
-    }, 1000);
+          return prevSec - 1;
+        });
+      }, 1000);
+    }
 
-    return () => clearInterval(intervalPom);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [isRunning, isBreak, workMin]);
 
   useEffect(() => {
-    if (!isRunning || !isBreak) return;
+    let breakInterval: NodeJS.Timeout | null = null;
 
-    let breakInterval: NodeJS.Timeout = setInterval(() => {
-      setBreakSec((prevSec) => {
-        if (prevSec === 0) {
-          if (breakMin === 0) {
-            clearInterval(breakInterval);
-            endBreak();
-            return 0;
-          } else {
-            setBreakMin((prevMin) => prevMin - 1);
-            return 59;
+    if (isRunning && isBreak) {
+      breakInterval = setInterval(() => {
+        setBreakSec((prevSec) => {
+          if (prevSec === 0) {
+            if (breakMin === 0) {
+              clearInterval(breakInterval!);
+              endBreak();
+              return 0;
+            } else {
+              setBreakMin((prevMin) => prevMin - 1);
+              return 59;
+            }
           }
-        }
-        return prevSec - 1;
-      });
-    }, 1000);
+          return prevSec - 1;
+        });
+      }, 1000);
+    }
 
-    return () => clearInterval(breakInterval);
+    return () => {
+      if (breakInterval) clearInterval(breakInterval);
+    };
   }, [isRunning, isBreak, breakMin]);
 
   const startTimer = () => {
