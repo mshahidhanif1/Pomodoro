@@ -38,7 +38,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!isRunning || !isBreak) return;
-    let breakInterval = setInterval(() => {
+    const breakInterval = setInterval(() => {
       setBreakSec((prevSec) => {
         if (prevSec === 0) {
           if (breakMin === 0) {
